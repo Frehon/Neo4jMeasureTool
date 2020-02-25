@@ -13,7 +13,7 @@ public class PostDataManagementController {
     private PostRepository postRepository;
 
     @GetMapping(value = "/neo4j/deletePosts")
-    public void deletePosts(){
+    public void deletePosts() {
         postRepository.deleteAll();
     }
 

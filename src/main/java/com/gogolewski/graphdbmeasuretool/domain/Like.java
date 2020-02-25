@@ -2,18 +2,17 @@ package com.gogolewski.graphdbmeasuretool.domain;
 
 import org.neo4j.ogm.annotation.*;
 
-import javax.validation.constraints.NotNull;
-
-@RelationshipEntity(type="LIKE")
+@RelationshipEntity(type = "LIKE")
 public class Like {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
-    @StartNode @NotNull
+    @StartNode
     private User likingUser;
 
-    @EndNode @NotNull
+    @EndNode
     private Post likedPost;
 
     public Long getId() {

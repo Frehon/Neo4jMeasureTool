@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 public class MessageDataManagementController {
@@ -33,7 +34,7 @@ public class MessageDataManagementController {
     }
 
     @GetMapping(value = "neo4j/getMessages")
-    public List<Message> getMessages() {
+    public Set<Message> getMessages() {
         return messageRepository.myFindAll();
     }
 

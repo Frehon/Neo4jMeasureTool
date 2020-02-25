@@ -5,18 +5,17 @@ import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
-import javax.validation.constraints.NotNull;
-
 @NodeEntity
 public class Message {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
-    @Relationship(type = " SEND", direction = Relationship.INCOMING) @NotNull
+    @Relationship(type = " SEND", direction = Relationship.INCOMING)
     private User messageSender;
 
-    @Relationship(type = "RECEIVED", direction = Relationship.OUTGOING) @NotNull
+    @Relationship(type = "RECEIVED")
     private User messageReceiver;
 
     private String messagePayload;

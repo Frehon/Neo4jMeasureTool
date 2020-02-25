@@ -1,18 +1,14 @@
 package com.gogolewski.graphdbmeasuretool.actioncontrollers;
 
-import com.gogolewski.graphdbmeasuretool.dataaccess.MessageRepository;
 import com.gogolewski.graphdbmeasuretool.dataaccess.PostRepository;
 import com.gogolewski.graphdbmeasuretool.dataaccess.UserRepository;
-import com.gogolewski.graphdbmeasuretool.domain.Message;
 import com.gogolewski.graphdbmeasuretool.domain.Post;
 import com.gogolewski.graphdbmeasuretool.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 @RestController
 public class UserDataManagementController {

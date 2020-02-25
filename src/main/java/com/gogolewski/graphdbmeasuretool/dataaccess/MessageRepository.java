@@ -11,5 +11,5 @@ import java.util.Set;
 public interface MessageRepository extends Neo4jRepository<Message, Long> {
 
     @Query("match (message: Message) return message")
-    List<Message> myFindAll();
+    Set<Message> myFindAll();
 }

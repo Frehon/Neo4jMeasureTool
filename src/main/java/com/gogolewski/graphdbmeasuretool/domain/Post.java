@@ -11,7 +11,8 @@ import java.util.Set;
 @NodeEntity
 public class Post {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
     private String postTextContent;
     private String postPhotoPath;
