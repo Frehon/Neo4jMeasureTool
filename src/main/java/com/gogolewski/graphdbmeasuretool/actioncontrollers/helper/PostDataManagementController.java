@@ -1,4 +1,4 @@
-package com.gogolewski.graphdbmeasuretool.actioncontrollers;
+package com.gogolewski.graphdbmeasuretool.actioncontrollers.helper;
 
 
 import com.gogolewski.graphdbmeasuretool.dataaccess.PostRepository;
