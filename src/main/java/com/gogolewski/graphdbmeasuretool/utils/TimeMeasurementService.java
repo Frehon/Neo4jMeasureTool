@@ -14,7 +14,7 @@ public class TimeMeasurementService {
         double averageTime = 0;
         if (times.size() > 0) {
             averageTime = times.stream()
-                    .mapToDouble(time -> time.doubleValue())
+                    .mapToDouble(Long::doubleValue)
                     .average().getAsDouble();
         }
         return averageTime;

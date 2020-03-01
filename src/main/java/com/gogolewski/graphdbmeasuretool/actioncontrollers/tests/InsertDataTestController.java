@@ -2,6 +2,7 @@ package com.gogolewski.graphdbmeasuretool.actioncontrollers.tests;
 
 import com.gogolewski.graphdbmeasuretool.dataaccess.UserRepository;
 import com.gogolewski.graphdbmeasuretool.domain.User;
+import com.gogolewski.graphdbmeasuretool.utils.Result;
 import com.gogolewski.graphdbmeasuretool.utils.TimeMeasurementService;
 import com.gogolewski.graphdbmeasuretool.utils.builders.UserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,58 +25,59 @@ public class InsertDataTestController {
 
     /**
      * Insert test request handler
-     * @param dataAmount - amount of data to insert
-     * @param numberOfRepetitions - number of repetitions
-     * @param eraseDataAfterEachTest - if true erase all data from the table after each test unit
-     * @param bulkInsert - if true insert in chunks, single save otherwise
-     * @return Test finished if test runs till the end, error stack trace otherwise
+     *
+     * @param dataAmount                   - amount of data to insert
+     * @param numberOfRepetitions          - number of repetitions
+     * @param eraseDataAfterEachRepetition - if true erase all data from the table after each test unit
+     * @param bulkInsert                   - if true insert in chunks, single save otherwise
+     * @return result of the test including times for every repetition, average time and message
      */
     @GetMapping(value = "neo4j/insertTest")
-    public String insertTestHandler(@RequestParam("dataAmount") int dataAmount,
-                                    @RequestParam("numberOfRepetitions") int numberOfRepetitions,
-                                    @RequestParam("eraseDataAfterEachTest") boolean eraseDataAfterEachTest,
-                                    @RequestParam("bulkInsert") boolean bulkInsert) {
-        performInsertTest(dataAmount, numberOfRepetitions, eraseDataAfterEachTest, bulkInsert);
-        return "Test finished";
+    public String insertTestHandler(@RequestParam int dataAmount,
+                                    @RequestParam int numberOfRepetitions,
+                                    @RequestParam boolean eraseDataAfterEachRepetition,
+                                    @RequestParam boolean bulkInsert) {
+        var times = performInsertTest(dataAmount, numberOfRepetitions, eraseDataAfterEachRepetition, bulkInsert);
+        return Result.from(times, (long) TimeMeasurementService.averageTime(times), "Insert tests results").toString();
     }
 
     /**
      * Performing speed test saving data into database
-     * @param recordsAmount
-     * @param numberOfRepetitions
-     * @param eraseDataAfterEachTest
-     * @param bulkInsert
+     *
+     * @param dataAmount             - amount of data to insert
+     * @param numberOfRepetitions    - number of repetitions
+     * @param eraseDataAfterEachTest - if true erase all data from the table after each test unit
+     * @param bulkInsert             - if true insert in chunks, single save otherwise
      */
-    private void performInsertTest(int recordsAmount, int numberOfRepetitions, boolean eraseDataAfterEachTest, boolean bulkInsert) {
+    private List performInsertTest(int dataAmount, int numberOfRepetitions, boolean eraseDataAfterEachTest, boolean bulkInsert) {
 
-        List times = new ArrayList();
+        var times = new ArrayList();
         IntStream.range(0, numberOfRepetitions).forEach(repetition -> {
-            Long startTime = System.nanoTime();
-            insert(recordsAmount, bulkInsert);
+            var startTime = System.nanoTime();
+            insert(dataAmount, bulkInsert);
             times.add(TimeMeasurementService.measureTime(startTime));
             eraseData(eraseDataAfterEachTest);
         });
-        System.out.println("Time by repetition: " + times);
-        System.out.println(TimeMeasurementService.averageTime(times) + " sec");
+        return times;
     }
 
     /**
      * Insert data into database. If bulkInsert = true data will be saved in 10 parts, otherwise every single record separated
+     *
      * @param recordsAmount amount of records to save
-     * @param bulkInsert if the save should be in chunks or every single record separated
+     * @param bulkInsert    if the save should be in chunks or every single record separated
      */
     private void insert(int recordsAmount, boolean bulkInsert) {
 
-        if(!bulkInsert){
+        if (!bulkInsert) {
             IntStream.range(0, recordsAmount).forEach(record -> {
-                userRepository.save(UserBuilder.createUser("User nr: " + record));
+                userRepository.save(UserBuilder.from("User nr: " + record));
             });
-        }
-        else {
+        } else {
             List<User> dataChunk = new ArrayList<>();
-            IntStream.range(0, recordsAmount/10).forEach(chunk -> {
+            IntStream.range(0, recordsAmount / 10).forEach(chunk -> {
                 IntStream.range(0, 10).forEach(record -> {
-                    dataChunk.add(UserBuilder.createUser("User nr: " + chunk + "." + record));
+                    dataChunk.add(UserBuilder.from("User nr: " + chunk + "." + record));
                 });
                 userRepository.saveAll(dataChunk);
                 dataChunk.clear();
@@ -85,7 +87,8 @@ public class InsertDataTestController {
 
     /**
      * Removes all data from the user table if eraseDataAfterEachTest flag set
-     * @param eraseDataAfterEachTest
+     *
+     * @param eraseDataAfterEachTest if data should be deleted or not
      */
     private void eraseData(boolean eraseDataAfterEachTest) {
         if (eraseDataAfterEachTest) {
