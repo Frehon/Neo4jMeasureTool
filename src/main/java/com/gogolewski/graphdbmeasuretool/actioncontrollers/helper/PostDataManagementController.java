@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PostDataManagementController {
 
-    @Autowired
     private PostRepository postRepository;
+
+    public PostDataManagementController(@Autowired PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     @GetMapping(value = "/neo4j/deletePosts")
     public void deletePosts() {

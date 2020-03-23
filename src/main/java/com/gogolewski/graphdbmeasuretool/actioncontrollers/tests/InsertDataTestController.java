@@ -1,10 +1,9 @@
 package com.gogolewski.graphdbmeasuretool.actioncontrollers.tests;
 
-import com.gogolewski.graphdbmeasuretool.dataaccess.UserRepository;
-import com.gogolewski.graphdbmeasuretool.domain.User;
+import com.gogolewski.graphdbmeasuretool.services.DeleteService;
+import com.gogolewski.graphdbmeasuretool.services.InsertService;
 import com.gogolewski.graphdbmeasuretool.utils.Result;
 import com.gogolewski.graphdbmeasuretool.utils.TimeMeasurementService;
-import com.gogolewski.graphdbmeasuretool.utils.builders.UserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,11 +16,14 @@ import java.util.stream.IntStream;
 @RestController
 public class InsertDataTestController {
 
-    public InsertDataTestController(@Autowired UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private InsertService insertService;
+    private DeleteService deleteService;
 
-    private UserRepository userRepository;
+    public InsertDataTestController(@Autowired InsertService insertService,
+                                    @Autowired DeleteService deleteService) {
+        this.insertService = insertService;
+        this.deleteService = deleteService;
+    }
 
     /**
      * Insert test request handler
@@ -54,46 +56,12 @@ public class InsertDataTestController {
         var times = new ArrayList();
         IntStream.range(0, numberOfRepetitions).forEach(repetition -> {
             var startTime = System.nanoTime();
-            insert(dataAmount, bulkInsert);
+            insertService.insert(dataAmount, bulkInsert);
             times.add(TimeMeasurementService.measureTime(startTime));
-            eraseData(eraseDataAfterEachTest);
+            deleteService.eraseData(eraseDataAfterEachTest);
         });
+        deleteService.eraseData(true);
         return times;
-    }
-
-    /**
-     * Insert data into database. If bulkInsert = true data will be saved in 10 parts, otherwise every single record separated
-     *
-     * @param recordsAmount amount of records to save
-     * @param bulkInsert    if the save should be in chunks or every single record separated
-     */
-    private void insert(int recordsAmount, boolean bulkInsert) {
-
-        if (!bulkInsert) {
-            IntStream.range(0, recordsAmount).forEach(record -> {
-                userRepository.save(UserBuilder.from("User nr: " + record));
-            });
-        } else {
-            List<User> dataChunk = new ArrayList<>();
-            IntStream.range(0, recordsAmount / 10).forEach(chunk -> {
-                IntStream.range(0, 10).forEach(record -> {
-                    dataChunk.add(UserBuilder.from("User nr: " + chunk + "." + record));
-                });
-                userRepository.saveAll(dataChunk);
-                dataChunk.clear();
-            });
-        }
-    }
-
-    /**
-     * Removes all data from the user table if eraseDataAfterEachTest flag set
-     *
-     * @param eraseDataAfterEachTest if data should be deleted or not
-     */
-    private void eraseData(boolean eraseDataAfterEachTest) {
-        if (eraseDataAfterEachTest) {
-            userRepository.deleteAll();
-        }
     }
 
 }

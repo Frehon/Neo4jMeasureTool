@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserDataManagementController {
 
-    @Autowired
     private UserRepository userRepository;
+
+    public UserDataManagementController(@Autowired UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GetMapping(value = "neo4j/getUsers")
     public Iterable getUsers() {
@@ -20,6 +23,5 @@ public class UserDataManagementController {
     public void deleteUsers() {
         userRepository.deleteAll();
     }
-
 
 }

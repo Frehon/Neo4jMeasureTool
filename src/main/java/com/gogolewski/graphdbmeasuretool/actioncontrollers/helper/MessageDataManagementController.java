@@ -11,8 +11,11 @@ import java.util.Set;
 @RestController
 public class MessageDataManagementController {
 
-    @Autowired
     private MessageRepository messageRepository;
+
+    public MessageDataManagementController(@Autowired MessageRepository messageRepository) {
+        this.messageRepository = messageRepository;
+    }
 
     @GetMapping(value = "neo4j/getMessages")
     public Set<Message> getMessages() {
