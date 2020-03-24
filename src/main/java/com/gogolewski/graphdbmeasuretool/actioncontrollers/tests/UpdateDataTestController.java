@@ -62,8 +62,8 @@ public class UpdateDataTestController {
     private List performUpdateTest(int dataAmount, int numberOfRepetitions, boolean bulkUpdate, boolean eraseDataAfterEachRepetition) {
         var times = new ArrayList();
         IntStream.range(0, numberOfRepetitions).forEach(repetition -> {
-            var usersAmount = aggregationService.count();
-            if (usersAmount < dataAmount) {
+            var existingUsersAmount = aggregationService.count();
+            if (existingUsersAmount < dataAmount) {
                 this.insertService.insert(dataAmount, true);
             }
             List<User> usersToUpdate = this.getService.getUsers(dataAmount);

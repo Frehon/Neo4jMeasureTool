@@ -50,6 +50,7 @@ public class InsertDataTestController {
      * @param numberOfRepetitions    - number of repetitions
      * @param eraseDataAfterEachTest - if true erase all data from the table after each test unit
      * @param bulkInsert             - if true insert in chunks, single save otherwise
+     * @return result of the test including times for every repetition, average time and message
      */
     private List performInsertTest(int dataAmount, int numberOfRepetitions, boolean eraseDataAfterEachTest, boolean bulkInsert) {
 
